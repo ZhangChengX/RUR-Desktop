@@ -1,0 +1,20 @@
+{
+  "name": "Dooyeed-Desktop",
+  "version": "0.1.0",
+  "description": "Dooyeed Desktop App",
+  "main": "main.js",
+  "devDependencies": {
+    "electron": "^6.0.9",
+    "electron-builder": "^21.2.0"
+  },
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder",
+    "test": "test"
+  },
+  "build": {
+    "appId": "com.rur.app"
+  },
+  "author": "Cheng Zhang",
+  "license": "ISC"
+}
