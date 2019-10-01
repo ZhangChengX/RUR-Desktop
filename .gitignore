@@ -63,3 +63,6 @@ typings/
 # Mac os
 .DS_Store
 
+# Electron Builder
+dist/
+

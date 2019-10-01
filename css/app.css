@@ -1,41 +1,40 @@
 
 .font-color-0 {
-	color: #b30000; /* Dark Red */
+	color: #BB2830; /* Dark Red 10% */
 	font-weight: bold;
 }
 .font-color-1 {
-	/* color: #ff6666; /* Red */
-	color: #cc0000; /* Dark Red */
+	color: #F4333F; /* Red 20% */
 }
 .font-color-2 {
-	color: #000099; /* Dark BLue */
+	color: #F97597; /* Light Red 30% */
 }
 .font-color-3 {
-	color: #0000ff; /* Blue */
+	color: #A15DB4; /* Light Purple 40% */
 }
 .font-color-4 {
-	color: #008000; /* Dark Green */
+	color: #6BC3E8; /* Light Blue 50% */
 }
 .font-color-5 {
-	color: #33cc33; /* Green */
+	color: #228CC0; /* Blue 60% */
 }
 .font-color-6 {
-	color: #333333; /* Grey */
+	color: #231F20; /* K100 70% */
 }
 .font-color-7 {
-	color: #595959; /* Grey */
+	color: #66686A; /* K75 80% */
 }
 .font-color-8 {
-	color: #808080; /* Grey */
+	color: #939597; /* K50 90% */
 }
 .font-color-9 {
-	color: #a6a6a6; /* Grey */
+	color: #C6C8CA; /* K25 100% */
 }
 .font-color-10, .font-color-11, .font-color-12, .font-color-13, .font-color-14, 
 .font-color-15, .font-color-16, .font-color-17, .font-color-18, .font-color-19, 
 .font-color-20, .font-color-21, .font-color-22, .font-color-23, .font-color-24,
 .font-color-25, .font-color-26, .font-color-27, .font-color-28, .font-color-29 {
-	color: #a6a6a6; /* Grey */
+	color: #C6C8CA; /* Grey K25 */
 }
 
 /* overwrite */

@@ -2,11 +2,12 @@ $(document).foundation();
 
 var server_api = "http://dooyeed.com:10080/api";
 var en_to_en_api = "https://glosbe.com/gapi/translate";
+var qg_url = "qg";
 var session_id = "";
 var sentence_rank; // s[0]:order, s[1]:sentence, s[2]:score, s[3]:color
 var paragraph_template;
 var ratio_record = [0];
-var algorithm = "fast";
+var algorithm = "semantic";
 
 var show_text_by_ratio = function(sentence_rank, ratio, element) {
 	// empty number of sentences
@@ -123,7 +124,8 @@ var show_keyword_list = function(keywords, element) {
 var sentence_preprocessing = function(sentence_rank) {
 	// sort by rank score
 	sentence_rank.sort(function(a, b) {
-		return b[2] - a[2];
+		// return b[2] - a[2]; // for score, 3, 2, 1, ...
+		return a[2] - b[2]; // for ranking order, 1, 2, 3, ...
 	});
 	// add color
 	for (var i = 0; i < sentence_rank.length; i++) {
@@ -143,13 +145,18 @@ var request_finished = function(data) {
 		paragraph_template = data["paragraph_template"];
 		sentence_rank = data["sentences"];
 		session_id = data["session_id"];
-		$("#qg").attr("href", "qg.html#!/" + session_id);
+
+		// $("#qg").attr("href", qg_url + "?lang=" + lang + "&session_id=" + session_id);
+		// $("#qg-summary").attr("href", "qg-summary?lang=" + lang + "&session_id=" + session_id);
+		// $("#qg-sat").attr("href", "qg-sat?lang=" + lang + "&session_id=" + session_id);
+
 		var ratio = parseInt($("#request .ratio").val());
 		sentence_preprocessing(sentence_rank);
 		show_text_by_ratio(sentence_rank, ratio, $("#reading-area"));
 		show_heat_map(ratio_record, $("#heat-map"));
 		$("#reading .ratio").val($("#request .ratio").val());
 		$("#reading").removeClass("hide");
+		overlay("hide");
 	} else {
 		alert(data["error"]);
 	}
@@ -183,7 +190,7 @@ var file_upload = function() {
 		type: "POST",
 		data: { 
 			lang: lang, 
-			session_id: session_id,
+			// session_id: session_id,
 			ratio: $("#request .ratio").val() / 100,
 			algorithm: algorithm,
 			is_multi_column: $("#multi-column").prop('checked')
@@ -251,6 +258,16 @@ var add_ratio_record = function(ratio) {
 		// }
 	}
 };
+
+var overlay = function(action) {
+	if ("show" == action) {
+		$(".reveal-overlay").show();
+		$("#overlay").show();
+	} else {
+		$(".reveal-overlay").hide();
+		$("#overlay").hide();
+	}
+}
 
 function setCookie(cname, cvalue, exdays) {
     var d = new Date();
@@ -329,19 +346,6 @@ $("#read-more").click(function() {
 	show_heat_map(ratio_record, $("#heat-map"));
 });
 
-// $("#submit-btn1, #submit-btn2").click(function() {
-// 	add_ratio_record(parseInt($("#request .ratio").val()));
-// 	if ($(this).attr("id") == "submit-btn2") {
-// 		algorithm = "semantic";
-// 	} else {
-// 		algorithm = "fast";
-// 	}
-// 	if ("" == $("#file-upload").val()) {
-// 		get_sentences();
-// 	} else {
-// 		file_upload();
-// 	}
-// });
 
 $("#file-upload").change(function() {
 	$(".file-upload").html($(this).val());
@@ -398,36 +402,65 @@ if (cookieLang) {
 	}
 }
 
-/* editor */
-
-var editor;
-var create_editor = function ( languageCode ) {
-	if ( editor ) {
-		editor.destroy();
-	}
-	if (languageCode == "zh") {
-		languageCode = 'zh-cn';
-	}
-
-	// editor = CKEDITOR.replace( 'reading-area' , {
-	// 	language: languageCode
-	// });
-
-	var editorElement = CKEDITOR.document.getById( 'reading-area' );
-	if (editorElement) {
-		editorElement.setAttribute( 'contenteditable', 'true' );
-		editor = CKEDITOR.inline( 'reading-area' , {
-			language: languageCode
-		});
-	}
-};
-if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 ) {
-	CKEDITOR.tools.enableHtml5Elements( document );
+/* For page opened directly with session_id. DOM ready */
+if (window.location.href.split("#!/")[1]) {
+	session_id = window.location.href.split("#!/")[1];
+	$("#request").addClass("hide");
+	$("#return-btn").addClass("hide");
+	add_ratio_record(10);
+	get_sentences();
 }
-create_editor(lang);
+
+/* hide #qg-sat link if no session_id */
+if (session_id == "") {
+	$("#qg-sat").addClass("hide");
+}
+
+/* editor */
+if (session_id == "") {
+	var editor;
+	var create_editor = function ( languageCode ) {
+		if ( editor ) {
+			editor.destroy();
+		}
+		if (languageCode == "zh") {
+			languageCode = 'zh-cn';
+		}
+
+		// editor = CKEDITOR.replace( 'reading-area' , {
+		// 	language: languageCode
+		// });
+
+		var editorElement = CKEDITOR.document.getById( 'reading-area' );
+		if (editorElement) {
+			editorElement.setAttribute( 'contenteditable', 'true' );
+			editor = CKEDITOR.inline( 'reading-area' , {
+				language: languageCode
+			});
+		}
+	};
+	if ( CKEDITOR.env.ie && CKEDITOR.env.version < 9 ) {
+		CKEDITOR.tools.enableHtml5Elements( document );
+	}
+	create_editor(lang);
+}
+
+/* submit and file upload */
+// $("#submit-btn1, #submit-btn2").click(function() {
+// 	add_ratio_record(parseInt($("#request .ratio").val()));
+// 	if ($(this).attr("id") == "submit-btn2") {
+// 		algorithm = "semantic";
+// 	} else {
+// 		algorithm = "fast";
+// 	}
+// 	if ("" == $("#file-upload").val()) {
+// 		get_sentences();
+// 	} else {
+// 		file_upload();
+// 	}
+// });
 
 /* dropzone drag and drop file */
-
 $("div#dropzone").dropzone({ 
 	autoProcessQueue: false,
 	paramName: "text-file",
@@ -450,7 +483,11 @@ $("div#dropzone").dropzone({
 		  // Make sure that the form isn't actually being sent.
 			e.preventDefault();
 			e.stopPropagation();
-			myDropzone.processQueue();
+			if (myDropzone.files.length > 0) {
+				overlay("show");
+				add_ratio_record(parseInt($("#request .ratio").val()));
+				myDropzone.processQueue();
+			}
 		});
 		this.on("addedfile", function(file) {
 			$(".dz-message").hide();
@@ -459,7 +496,6 @@ $("div#dropzone").dropzone({
 			}
 		});
 		this.on("removedfile", function(file) {
-			console.log(this.files.length);
 			if (this.files.length < 1) {
 				$(".dz-message").show();
 			}
@@ -483,7 +519,4 @@ $("div#dropzone").dropzone({
 	}
 });
 
-// Online/Offline Event Detection
-if (!navigator.onLine) {
-	alert('Error: Network Offline')
-}
+
