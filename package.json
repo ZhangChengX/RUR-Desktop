@@ -1,6 +1,6 @@
 {
   "name": "Dooyeed-Desktop",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Dooyeed Desktop App",
   "main": "main.js",
   "devDependencies": {
